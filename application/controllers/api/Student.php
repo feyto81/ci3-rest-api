@@ -83,7 +83,32 @@ class Student extends REST_Controller
 
     public function index_put()
     {
-        echo 'index put';
+        $data = json_decode(file_get_contents("php://input"));
+        if (isset($data->id) && isset($data->name) && isset($data->email) && isset($data->mobile) && isset($data->course)) {
+            $student_id = $data->id;
+            $student_info = array(
+                "name" => $data->name,
+                "email" => $data->email,
+                "mobile" => $data->mobile,
+                "course" => $data->course,
+            );
+            if ($this->student_model->update_student_information($student_id, $student_info)) {
+                $this->response(array(
+                    "status" => 1,
+                    "message" => "Student data updated successfully"
+                ), REST_Controller::HTTP_OK);
+            } else {
+                $this->response(array(
+                    "status" => 0,
+                    "message" => "Failed to update student data"
+                ), REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            $this->response(array(
+                "status" => 0,
+                "message" => "All fields are needed"
+            ), REST_Controller::HTTP_NOT_FOUND);
+        }
     }
 
     public function index_delete()
