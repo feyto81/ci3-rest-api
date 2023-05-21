@@ -89,8 +89,18 @@ class Student extends REST_Controller
     public function index_delete()
     {
         $data = json_decode(file_get_contents("php://input"));
-        $student_id = $this->security->xss_clean($data['student_id']);
-        print_r($student_id);
+        $student_id = $this->security->xss_clean($data->student_id);
+        if ($this->student_model->delete_student($student_id)) {
+            $this->response(array(
+                "status" => 1,
+                "message" => "Student has been deleted"
+            ), REST_Controller::HTTP_OK);
+        } else {
+            $this->response(array(
+                "status" => 0,
+                "message" => "Failed to deleted student"
+            ), REST_Controller::HTTP_NOT_FOUND);
+        }
     }
 
     public function index_get()
